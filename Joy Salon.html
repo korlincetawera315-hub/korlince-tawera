@@ -1,0 +1,775 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Joy Salon - Reservasi</title>
+    <style>
+        * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, Helvetica, sans-serif;
+}
+body {
+    background: yellow;
+    color: purple;
+}
+.dashboard {
+    display: flex;
+    min-height: 100vh;
+}
+.sidebar {
+    width: 215px;
+    min-height: 100vh;
+    background: green;
+    padding: 25px 10px;
+    color: white;
+}
+.brand {
+    padding: 0 8px 22px;
+}
+.brand h2 {
+    font-size: 20px;
+    margin-bottom: 2px;
+}
+.brand span {
+    font-size: 10px;
+    color: #c9baca;
+}
+.menu {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+.menu-item {
+    height: 35px;
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    padding: 0 10px;
+    color: #e5dbe6;
+    text-decoration: none;
+    border: 1px solid #57345c;
+    border-radius: 5px;
+    font-size: 12px;
+    transition: 0.2s;
+}
+.menu-item span {
+    width: 16px;
+    text-align: center;
+}
+.menu-item:hover {
+    background: #4b2452;
+}
+.menu-item.active {
+    background: #49234f;
+    border-color: #734579;
+    color: white;
+}
+.logout {
+    margin-top: 2px;
+}
+.main-content {
+    flex: 1;
+    padding: 45px 30px;
+    overflow-x: auto;
+}
+.page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 20px;
+}
+.page-header h1 {
+    font-size: 20px;
+    margin-bottom: 5px;
+}
+.page-header p {
+    font-size: 11px;
+    color: #777;
+}
+.btn-add {
+    border: none;
+    background: #45204b;
+    color: white;
+
+    padding: 10px 17px;
+
+    border-radius: 5px;
+
+    font-size: 11px;
+
+    cursor: pointer;
+}
+.btn-add:hover {
+    background: #321538;
+}
+.filter-box {
+    display: grid;
+    grid-template-columns: 1fr 120px 120px;
+    gap: 6px;
+    background: white;
+    padding: 10px;
+    border: 1px solid #e1dce1;
+    border-radius: 5px 5px 0 0;
+}
+.filter-box input,
+.filter-box select {
+    height: 31px;
+    border: 1px solid #ddd6df;
+    border-radius: 4px;
+    padding: 0 10px;
+    font-size: 10px;
+    color: #555;
+    outline: none;
+}
+.filter-box input:focus,
+.filter-box select:focus {
+    border-color: #6c4172;
+}
+.table-container {
+    background: white;
+    border: 1px solid #e1dce1;
+    border-top: none;
+    overflow-x: auto;
+}
+table {
+    width: 100%;
+    min-width: 750px;
+    border-collapse: collapse;
+}
+thead {
+    background: #faf8fa;
+}
+th {
+    text-align: left;
+    padding: 12px 10px;
+    font-size: 9px;
+    font-weight: 600;
+    color: #666;
+    border-bottom: 1px solid #e6e1e6;
+}
+td {
+    padding: 11px 10px;
+    font-size: 10px;
+    color: #444;
+    border-bottom: 1px solid #eee9ee;
+    white-space: nowrap;
+}
+tbody tr:hover {
+    background: #fcfafc;
+}
+.status {
+    display: inline-block;
+    padding: 4px 8px;
+    border-radius: 20px;
+    font-size: 8px;
+    font-weight: 600;
+}
+.status.waiting {
+    color: #98762d;
+    background: #fff9e8;
+    border: 1px solid #e5d394;
+}
+.status.confirmed {
+    color: #a17c28;
+    background: #fff8e5;
+    border: 1px solid #e3cd8e;
+}
+.status.completed {
+    color: #327b70;
+    background: #eefaf7;
+    border: 1px solid #9bd0c6;
+}
+.status.rejected {
+    color: #b05a6b;
+    background: #fff1f3;
+    border: 1px solid #e5aab5;
+}
+.action-btn {
+    border: none;
+    background: none;
+    padding: 2px 3px;
+    margin-right: 3px;
+    font-size: 9px;
+    cursor: pointer;
+}
+.confirm {
+    color: #5f5370;
+}
+.reject {
+    color: #a05262;
+}
+.edit {
+    color: #695574;
+}
+.finish {
+    color: #4f796e;
+}
+.view {
+    color: #555;
+}
+.action-btn:hover {
+    text-decoration: underline;
+}
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 100;
+    inset: 0;
+    background: rgba(30, 20, 30, 0.55);
+    justify-content: center;
+    align-items: center;
+}
+.modal-content {
+    width: 400px;
+    max-width: 90%;
+    background: white;
+    border-radius: 8px;
+    padding: 22px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+}
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+.modal-header h2 {
+    font-size: 18px;
+}
+.close {
+    border: none;
+    background: none;
+    font-size: 25px;
+    cursor: pointer;
+    color: #555;
+}
+.modal-content label {
+    display: block;
+    font-size: 11px;
+    margin: 10px 0 5px;
+    color: #444;
+}
+.modal-content input {
+    width: 100%;
+    height: 35px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 0 10px;
+    outline: none;
+}
+.modal-buttons {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    margin-top: 20px;
+}
+.modal-buttons button {
+    padding: 9px 16px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+.modal-buttons button:first-child {
+    background: #eee;
+    color: #444;
+}
+.modal-buttons button:last-child {
+    background: #45204b;
+    color: white;
+}
+@media (max-width: 800px) {
+    .sidebar {
+        width: 180px;
+    }
+    .main-content {
+        padding: 30px 15px;
+    }
+    .filter-box {
+        grid-template-columns: 1fr;
+    }
+
+}
+@media (max-width: 600px) {
+    .sidebar {
+        width: 70px;
+        padding: 20px 6px;
+    }
+    .brand h2 {
+        font-size: 13px;
+    }
+
+    .brand span {
+        display: none;
+    }
+
+    .menu-item {
+        justify-content: center;
+        padding: 0;
+    }
+
+    .menu-item span {
+        font-size: 14px;
+    }
+
+    .menu-item {
+        font-size: 0;
+    }
+
+    .main-content {
+        padding: 25px 10px;
+    }
+
+    .page-header {
+        align-items: center;
+    }
+
+    .page-header h1 {
+        font-size: 18px;
+    }
+
+    .btn-add {
+        padding: 8px 10px;
+    }
+
+}
+    </style>
+</head>
+
+<body>
+
+<div class="dashboard">
+    <aside class="sidebar">
+
+        <div class="brand">
+            <h2>Joy Salon</h2>
+            <span>Admin</span>
+        </div>
+
+        <nav class="menu">
+
+            <a href="#" class="menu-item">
+                <span>⌂</span>
+                Beranda
+            </a>
+
+            <a href="#" class="menu-item active">
+                <span>▣</span>
+                Reservasi
+            </a>
+
+            <a href="#" class="menu-item">
+                <span>▤</span>
+                Transaksi
+            </a>
+
+            <a href="#" class="menu-item">
+                <span>✂</span>
+                Treatment
+            </a>
+
+            <a href="#" class="menu-item">
+                <span>♙</span>
+                Pelanggan
+            </a>
+
+            <a href="#" class="menu-item">
+                <span>♟</span>
+                Karyawan
+            </a>
+
+            <a href="#" class="menu-item">
+                <span>⚙</span>
+                Pengguna
+            </a>
+
+            <a href="#" class="menu-item">
+                <span>▥</span>
+                Laporan
+            </a>
+
+            <a href="#" class="menu-item logout">
+                <span>⇥</span>
+                Keluar
+            </a>
+
+        </nav>
+
+    </aside>
+    <main class="main-content">
+        <div class="page-header">
+
+            <div>
+                <h1>Reservasi</h1>
+                <p>Jumat, 18 September 2026 • 14 jadwal</p>
+            </div>
+
+            <button class="btn-add" onclick="openModal()">
+                + Tambah reservasi
+            </button>
+
+        </div>
+        <div class="filter-box">
+
+            <input
+                type="text"
+                id="searchInput"
+                placeholder="Cari nama pelanggan atau nomor HP..."
+                onkeyup="filterData()"
+            >
+
+            <input
+                type="date"
+                id="dateFilter"
+                onchange="filterData()"
+            >
+
+            <select id="statusFilter" onchange="filterData()">
+                <option value="">Semua status</option>
+                <option value="Menunggu">Menunggu</option>
+                <option value="Dikonfirmasi">Dikonfirmasi</option>
+                <option value="Selesai">Selesai</option>
+                <option value="Ditolak">Ditolak</option>
+            </select>
+
+        </div>
+        <div class="table-container">
+
+            <table>
+
+                <thead>
+                    <tr>
+                        <th>Kode</th>
+                        <th>Pelanggan</th>
+                        <th>Treatment</th>
+                        <th>Jam</th>
+                        <th>Karyawan</th>
+                        <th>Status</th>
+                        <th>Aksi</th>
+                    </tr>
+                </thead>
+                <tbody id="reservationTable">
+                    <tr>
+                        <td>RS-1043</td>
+                        <td>yunita</td>
+                        <td>Smoothing</td>
+                        <td>15.00</td>
+                        <td>nina</td>
+                        <td>
+                            <span class="status waiting">
+                                Menunggu
+                            </span>
+                        </td>
+                        <td>
+                            <button
+                                class="action-btn confirm"
+                                onclick="confirmReservation(this)"
+                            >
+                                Konfirmasi
+                            </button>
+
+                            <button
+                                class="action-btn reject"
+                                onclick="rejectReservation(this)"
+                            >
+                                Tolak
+                            </button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>RS-1042</td>
+                        <td>alfian</td>
+                        <td>Potong pria</td>
+                        <td>13.00</td>
+                        <td>carles</td>
+                        <td>
+                            <span class="status confirmed">
+                                Dikonfirmasi
+                            </span>
+                        </td>
+                        <td>
+                            <button
+                                class="action-btn edit"
+                                onclick="editReservation(this)"
+                            >
+                                Ubah
+                            </button>
+
+                            <button
+                                class="action-btn finish"
+                                onclick="finishReservation(this)"
+                            >
+                                Selesai
+                            </button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>RS-1041</td>
+                        <td>miranda</td>
+                        <td>Creambath + potong</td>
+                        <td>11.30</td>
+                        <td>regina</td>
+                        <td>
+                            <span class="status completed">
+                                Selesai
+                            </span>
+                        </td>
+                        <td>
+                            <button
+                                class="action-btn view"
+                                onclick="viewReservation(this)"
+                            >
+                                Lihat
+                            </button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>RS-1040</td>
+                        <td>jois</td>
+                        <td>Hair spa</td>
+                        <td>10.00</td>
+                        <td>mika</td>
+                        <td>
+                            <span class="status completed">
+                                Selesai
+                            </span>
+                        </td>
+                        <td>
+                            <button
+                                class="action-btn view"
+                                onclick="viewReservation(this)"
+                            >
+                                Lihat
+                            </button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>RS-1039</td>
+                        <td>ince</td>
+                        <td>Facial dasar</td>
+                        <td>16.30</td>
+                        <td>—</td>
+                        <td>
+                            <span class="status rejected">
+                                Ditolak
+                            </span>
+                        </td>
+                        <td>
+                            <button
+                                class="action-btn view"
+                                onclick="viewReservation(this)"
+                            >
+                                Lihat
+                            </button>
+                        </td>
+                   </tr>
+                </tbody>
+            </table>
+        </div>
+    </main>
+</div>
+<div class="modal" id="reservationModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2>Tambah Reservasi</h2>
+            <button onclick="closeModal()" class="close">
+                ×
+            </button>
+        </div>
+        <form onsubmit="addReservation(event)">
+
+            <label>Nama Pelanggan</label>
+            <input type="text" id="customerName" required>
+
+            <label>Nomor HP</label>
+            <input type="text" id="phoneNumber" required>
+
+            <label>Treatment</label>
+            <input type="text" id="treatment" required>
+
+            <label>Jam</label>
+            <input type="time" id="time" required>
+
+            <label>Karyawan</label>
+            <input type="text" id="employee" required>
+
+            <div class="modal-buttons">
+                <button type="button" onclick="closeModal()">
+                    Batal
+                </button>
+
+                <button type="submit">
+                    Simpan
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+<script>
+function openModal() {
+    document.getElementById("reservationModal").style.display = "flex";
+}
+function closeModal() {
+    document.getElementById("reservationModal").style.display = "none";
+}
+function addReservation(event) {
+    event.preventDefault();
+    const nama = document.getElementById("customerName").value;
+    const treatment = document.getElementById("treatment").value;
+    const jam = document.getElementById("time").value;
+    const karyawan = document.getElementById("employee").value;
+    const table = document.getElementById("reservationTable");
+    const kode = "RS-" + (1044 + table.rows.length);
+    const row = table.insertRow();
+    row.innerHTML = `
+        <td>${kode}</td>
+        <td>${nama}</td>
+        <td>${treatment}</td>
+        <td>${jam}</td>
+        <td>${karyawan}</td>
+        <td>
+            <span class="status waiting">
+                Menunggu
+            </span>
+        </td>
+        <td>
+            <button
+                class="action-btn confirm"
+                onclick="confirmReservation(this)"
+            >
+                Konfirmasi
+            </button>
+
+            <button
+                class="action-btn reject"
+                onclick="rejectReservation(this)"
+            >
+                Tolak
+            </button>
+
+        </td>
+    `;
+
+    document.querySelector("form").reset();
+    closeModal();
+    alert("Reservasi berhasil ditambahkan.");
+}
+function confirmReservation(button) {
+    const row = button.closest("tr");
+    const status = row.querySelector(".status");
+    status.textContent = "Dikonfirmasi";
+    status.className = "status confirmed";
+    row.cells[6].innerHTML = `
+        <button
+            class="action-btn edit"
+            onclick="editReservation(this)"
+        >
+            Ubah
+        </button>
+        <button
+            class="action-btn finish"
+            onclick="finishReservation(this)"
+        >
+            Selesai
+        </button>
+    `;
+}
+function rejectReservation(button) {
+    const row = button.closest("tr");
+    const status = row.querySelector(".status");
+    status.textContent = "Ditolak";
+    status.className = "status rejected";
+    row.cells[6].innerHTML = `
+        <button
+            class="action-btn view"
+            onclick="viewReservation(this)"
+        >
+            Lihat
+        </button>
+    `;
+}
+function finishReservation(button) {
+    const row = button.closest("tr");
+    const status = row.querySelector(".status");
+    status.textContent = "Selesai";
+    status.className = "status completed";
+    row.cells[6].innerHTML = `
+        <button
+            class="action-btn view"
+            onclick="viewReservation(this)"
+        >
+            Lihat
+        </button>
+    `;
+}
+function editReservation(button) {
+    const row = button.closest("tr");
+    const nama = row.cells[1].textContent;
+    alert("Data reservasi " + nama + " dapat diubah.");
+}
+function viewReservation(button) {
+    const row = button.closest("tr");
+    const kode = row.cells[0].textContent;
+    const nama = row.cells[1].textContent;
+    const treatment = row.cells[2].textContent;
+    const jam = row.cells[3].textContent;
+    const karyawan = row.cells[4].textContent;
+    const status = row.querySelector(".status").textContent;
+    alert(
+        "DETAIL RESERVASI\n\n" +
+        "Kode: " + kode + "\n" +
+        "Pelanggan: " + nama + "\n" +
+        "Treatment: " + treatment + "\n" +
+        "Jam: " + jam + "\n" +
+        "Karyawan: " + karyawan + "\n" +
+        "Status: " + status
+    );
+}
+function filterData() {
+    const search =
+        document
+        .getElementById("searchInput")
+        .value
+        .toLowerCase();
+    const status =
+        document
+        .getElementById("statusFilter")
+        .value
+        .toLowerCase();
+    const rows =
+        document
+        .querySelectorAll("#reservationTable tr");
+    rows.forEach(row => {
+        const nama =
+            row.cells[1]
+            ? row.cells[1].textContent.toLowerCase()
+            : "";
+
+        const statusData =
+            row.querySelector(".status")
+            ? row.querySelector(".status").textContent.toLowerCase()
+            : "";
+        const cocokNama =
+            nama.includes(search);
+        const cocokStatus =
+            status === "" ||
+            statusData === status;
+        if (cocokNama && cocokStatus) {
+            row.style.display = "";
+        } else {
+            row.style.display = "none";
+        }
+    });
+}
+window.onclick = function(event) {
+    const modal =
+        document.getElementById("reservationModal");
+    if (event.target === modal) {
+        closeModal();
+    }
+};
+</script>
+</body>
+</html>
